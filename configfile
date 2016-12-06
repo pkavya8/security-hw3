@@ -1,24 +1,4 @@
-DocumentRoot /home/smb2132/input/
+DocumentRoot /Users/kavyapremkumar/Documents/Fall'16/Security/hw3
+OutputArea /Users/kavyapremkumar/Documents/Fall'16/Security/output
 Alias /foo/ /tmp/abc
-Alias /bar/ /etc
-Alias /bar/ /etc
-Alias /bar/ /etc
-Alias /bar/ /etc
-Alias /bar/ /etc
-Alias /bar/ /etc
-Alias /bar/ /etc
-Alias /bar/ /etc
-Alias /bar/ /etc
-Alias /bar/ /etc
-Alias /bar/ /etc
-Alias /bar/ /etc
-Alias /bar/ /etc
-Alias /bar/ /etc
-Alias /bar/ /etc
-Alias /bar/ /etc
-Alias /bar/ /etc
-Alias /bar/ /etc
-Alias /bar/ /etc
-Alias /bar/ /etc
-Alias /bar/ /etc
 Alias /bar/ /etc

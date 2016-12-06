@@ -75,9 +75,6 @@ void parseconfigfile(char* configfile){
 }
 
 void copyfiles(char* my_string){
-	for(int i = 0; i<count; i++){
-		printf("Alias :%s, Alias value :%s \n",alias[i],aliasvalue[i]);
-	}
 	char *files;
 	strtok (my_string,"\n");
 	files = strtok(my_string," ");
@@ -106,20 +103,39 @@ void copyfiles(char* my_string){
 		printf("%s: X %s \n",src_filename,strerror(errno));
 		return ;
 	}
-	dest_ptr = fopen(file2,"w");
-	if ( dest_ptr == NULL){
-		printf("%s: X %s \n",file2, strerror(errno));
+	pid_t pid;
+	int status;
+	if ((pid = fork()) < 0) {
+ 		printf("fork error");
+	} else if (pid == 0) {      /* child */
+		if(chroot(outputarea) !=0){
+			printf("chroot :%s",strerror(errno));
+			exit(127);
+		}
+		if(chdir("/")!=0){
+			printf("chdir : %s",strerror(errno));
+			exit(127);
+		}
+		dest_ptr = fopen(file2,"w");
+		if ( dest_ptr == NULL){
+			printf("%s: X %s \n",file2, strerror(errno));
 		return ;
-	}
-	// Copy contents until end of line
-	buf = fgetc(src_ptr);
-	while(buf != EOF){
-		fputc(buf,dest_ptr);
+		}
+		// Copy contents until end of line
 		buf = fgetc(src_ptr);
+		while(buf != EOF){
+			fputc(buf,dest_ptr);
+			buf = fgetc(src_ptr);
+		}
+		// Close file pointer
+		fclose(dest_ptr);
+		exit(127);
 	}
-	// Close file pointers
+	if ((pid = waitpid(pid, &status, 0)) < 0)
+		printf("waitpid error");
+
+	// Close file pointer
 	fclose(src_ptr);
-	fclose(dest_ptr);
 }
 
 int main(int argc,char *argv[]){
