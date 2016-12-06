@@ -1,0 +1,24 @@
+DocumentRoot /home/smb2132/input/
+Alias /foo/ /tmp/abc
+Alias /bar/ /etc
+Alias /bar/ /etc
+Alias /bar/ /etc
+Alias /bar/ /etc
+Alias /bar/ /etc
+Alias /bar/ /etc
+Alias /bar/ /etc
+Alias /bar/ /etc
+Alias /bar/ /etc
+Alias /bar/ /etc
+Alias /bar/ /etc
+Alias /bar/ /etc
+Alias /bar/ /etc
+Alias /bar/ /etc
+Alias /bar/ /etc
+Alias /bar/ /etc
+Alias /bar/ /etc
+Alias /bar/ /etc
+Alias /bar/ /etc
+Alias /bar/ /etc
+Alias /bar/ /etc
+Alias /bar/ /etc
