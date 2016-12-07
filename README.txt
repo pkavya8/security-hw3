@@ -12,18 +12,18 @@ DocumentRoot and OutputArea must be present in input. Aliases are optional.
 
 Aliases are allowed only for one directory:
 Eg: 
-Correct : Alias \foo \bar
-Wrong : Alias \foo\bar \baz
+Correct : Alias /foo /bar
+Wrong : Alias /foo/bar /baz
 
 The document root, output area and alias values are expected to be given with no trailing "/". 
 Eg : 
-Correct : \foo
-Wrong  : \foo\
+Correct : /foo
+Wrong  : /foo/
 
 The Alias is expected to be given with trailing "/". 
 Eg : 
-Correct : \foo\
-Wrong : \foo
+Correct : /foo/
+Wrong : /foo
 
 Therefore, Correct input for document root is : DocumentRoot "/home/abc"
 Correct input for output area is : OutputArea "/home/abcd"
