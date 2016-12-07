@@ -17,8 +17,6 @@ char **alias = NULL;
 char **aliasvalue = NULL;
 int count = 0;
 
-
-
 void parsetext(char* string){
 	strtok(string, "\n");
 	char *tokens;
@@ -74,6 +72,45 @@ void parseconfigfile(char* configfile){
 	fclose(src_ptr);
 }
 
+char* checkforalias(char *filename){
+	for(int i=0;i<count;i++){
+		if(strncmp(filename,*(alias+i),strlen(*(alias+i))) == 0){
+			char *newfilename = malloc(strlen(aliasvalue[i])+strlen(filename));
+			strcpy(newfilename,aliasvalue[i]);
+			strcat(newfilename,"/");
+			strcat(newfilename,filename+strlen(alias[i]));
+			return newfilename;
+		}
+	}
+	return NULL;
+}
+
+char* parseinputfile(char *filename){
+	char *newinputfile;
+	int index = 0;
+	char **tokens = malloc(sizeof(char *)*50);
+	char *token = strtok(filename,"/");
+	while(token!=NULL){
+		if(strcmp(token,"..") == 0){
+			index--;
+		}
+		else if(strcmp(token,".") !=0){
+			*(tokens+index) = token;
+			index++;
+		}
+		token = strtok(NULL,"/");
+		if(index <0){
+			return NULL;
+		}
+	}
+	newinputfile = malloc(strlen(filename));
+	for(int i=0;i<index; i++){
+		strcat(newinputfile,"/");
+		strcat(newinputfile,*(tokens+i));
+	}
+	return newinputfile;
+}
+
 void copyfiles(char* my_string){
 	char *files;
 	strtok (my_string,"\n");
@@ -81,27 +118,41 @@ void copyfiles(char* my_string){
 	char *file1 = files;
 	files = strtok (NULL, " ");
 	char *file2 = files;
+	char *newinputfile = parseinputfile(file1);
+	if(newinputfile == NULL){
+		printf("Input file name is invalid \n");
+		return;
+	}
 	FILE *src_ptr, *dest_ptr;
-	char *src_filename = malloc(strlen(documentroot)+strlen(file1)+2);
-	if(file1[0] != '/' && documentroot[strlen(documentroot)-1] != '/'){
+	char *src_filename = malloc(strlen(documentroot)+strlen(newinputfile)+2);
+	if(newinputfile[0] != '/' && documentroot[strlen(documentroot)-1] != '/'){
    	strcpy(src_filename,documentroot);
    	strcat(src_filename,"/");
-   	strcat(src_filename,file1);	
+   	strcat(src_filename,newinputfile);	
 	}
-	else if(file1[0] == '/' && documentroot[strlen(documentroot)-1] == '/'){
+	else if(newinputfile[0] == '/' && documentroot[strlen(documentroot)-1] == '/'){
 		strcpy(src_filename,documentroot);
-   	strcat(src_filename,file1+1);
+   	strcat(src_filename,newinputfile+1);
 	}
 	else{
 		strcpy(src_filename,documentroot);
-   	strcat(src_filename,file1);
+   	strcat(src_filename,newinputfile);
 	}
 	char buf;
 	src_ptr = fopen(src_filename,"r");
 	// Check error for opening the file
 	if ( src_ptr == NULL){
-		printf("%s: X %s \n",src_filename,strerror(errno));
-		return ;
+		newinputfile = checkforalias(newinputfile);
+		fclose(src_ptr);
+		if(newinputfile == NULL){
+			printf("Invalid input file");
+			return;
+		}
+		src_ptr = fopen(newinputfile,"r");
+		if(src_ptr == NULL){
+			printf("%s: X %s \n",newinputfile, strerror(errno));
+			return;
+		}
 	}
 	pid_t pid;
 	int status;
@@ -119,7 +170,7 @@ void copyfiles(char* my_string){
 		dest_ptr = fopen(file2,"w");
 		if ( dest_ptr == NULL){
 			printf("%s: X %s \n",file2, strerror(errno));
-		return ;
+			exit(127);
 		}
 		// Copy contents until end of line
 		buf = fgetc(src_ptr);
@@ -129,6 +180,7 @@ void copyfiles(char* my_string){
 		}
 		// Close file pointer
 		fclose(dest_ptr);
+		fclose(src_ptr);
 		exit(127);
 	}
 	if ((pid = waitpid(pid, &status, 0)) < 0)
